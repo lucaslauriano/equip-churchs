@@ -1,42 +1,21 @@
-import React from "react";
-import {
-  Navbar as MTNavbar,
-  Collapse,
-  IconButton,
-  Typography,
-  Button,
-} from "@material-tailwind/react";
-import { XMarkIcon, Bars3Icon } from "@heroicons/react/24/solid";
+import React, { useState } from 'react';
+import { XMarkIcon, Bars3Icon } from '@heroicons/react/24/solid';
+import { Dialog } from '@headlessui/react';
 
 interface NavItemProps {
   children: React.ReactNode;
   href?: string;
 }
-function NavItem({ children, href }: NavItemProps) {
-  return (
-    <li>
-      <Typography
-        as="a"
-        href={href || "#"}
-        target={href ? "_blank" : "_self"}
-        variant="small"
-        className="font-medium"
-      >
-        {children}
-      </Typography>
-    </li>
-  );
-}
 
 export function Navbar() {
   const [open, setOpen] = React.useState(false);
-  const [isScrolling, setIsScrolling] = React.useState(false);
-
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
   const handleOpen = () => setOpen((cur) => !cur);
 
   React.useEffect(() => {
     window.addEventListener(
-      "resize",
+      'resize',
       () => window.innerWidth >= 960 && setOpen(false)
     );
   }, []);
@@ -50,108 +29,123 @@ export function Navbar() {
       }
     }
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const navigation = [
+    { name: 'Home', href: '#' },
+    { name: 'Blog', href: '#' },
+    { name: 'Cursos', href: '#' },
+    { name: 'Sobre', href: '#' },
+  ];
+
   return (
-    <MTNavbar
-      fullWidth
-      shadow={false}
-      blurred={false}
-      color={isScrolling ? "white" : "transparent"}
-      className="fixed top-0 z-50 border-0"
+    <header
+      className={[
+        isScrolling
+          ? 'bg-white shadow fixed top-0 z-50 inset-x-0 text-black'
+          : 'absolute inset-x-0 top-0 z-50 text-black',
+        'absolute inset-x-0 top-0 z-50',
+      ].join(',')}
+      id='navbar'
     >
-      <div className="container mx-auto flex items-center justify-between">
-        <Typography variant="h6" color={isScrolling ? "blue-gray" : "white"}>
-          Material Tailwind
-        </Typography>
-        <ul
-          className={`ml-10 hidden items-center gap-6 lg:flex ${
-            isScrolling ? "text-gray-900" : "text-white"
-          }`}
-        >
-          <NavItem>Home</NavItem>
-          <NavItem>About Us</NavItem>
-          <NavItem>Contact Us</NavItem>
-          <NavItem href="https://www.material-tailwind.com/docs/react/installation">
-            Docs
-          </NavItem>
-        </ul>
-        <div className="hidden gap-2 lg:flex">
-          <IconButton
-            variant="text"
-            color={isScrolling ? "gray" : "white"}
-            size="sm"
-          >
-            <i className="fa-brands fa-twitter text-base" />
-          </IconButton>
-          <IconButton
-            variant="text"
-            color={isScrolling ? "gray" : "white"}
-            size="sm"
-          >
-            <i className="fa-brands fa-facebook text-base" />
-          </IconButton>
-          <IconButton
-            variant="text"
-            color={isScrolling ? "gray" : "white"}
-            size="sm"
-          >
-            <i className="fa-brands fa-instagram text-base" />
-          </IconButton>
-          <a href="https://www.material-tailwind.com/blocks" target="_blank">
-            <Button color={isScrolling ? "gray" : "white"} size="sm">
-              Blocks
-            </Button>
+      <nav
+        className='flex items-center justify-between p-6 lg:px-8 '
+        aria-label='Global'
+      >
+        <div className='flex lg:flex-1'>
+          <a href='#' className='-m-1.5 p-1.5'>
+            <span className='sr-only'>Your Company</span>
+            <img
+              className='h-8 w-auto'
+              src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500'
+              alt=''
+            />
           </a>
         </div>
-        <IconButton
-          variant="text"
-          color={isScrolling ? "gray" : "white"}
-          onClick={handleOpen}
-          className="ml-auto inline-block lg:hidden"
-        >
-          {open ? (
-            <XMarkIcon strokeWidth={2} className="h-6 w-6" />
-          ) : (
-            <Bars3Icon strokeWidth={2} className="h-6 w-6" />
-          )}
-        </IconButton>
-      </div>
-      <Collapse open={open}>
-        <div className="container mx-auto mt-4 rounded-lg bg-white px-6 py-5">
-          <ul className="flex flex-col gap-4 text-blue-gray-900">
-            <NavItem>Home</NavItem>
-            <NavItem>About Us</NavItem>
-            <NavItem>Contact Us</NavItem>
-            <NavItem href="https://www.material-tailwind.com/docs/react/installation">
-              Docs
-            </NavItem>
-            <NavItem href="https://www.material-tailwind.com/blocks">
-              Blocks
-            </NavItem>
-          </ul>
-          <div className="mt-4 flex gap-2">
-            <IconButton variant="text" color="gray" size="sm">
-              <i className="fa-brands fa-twitter text-base" />
-            </IconButton>
-            <IconButton variant="text" color="gray" size="sm">
-              <i className="fa-brands fa-facebook text-base" />
-            </IconButton>
-            <IconButton variant="text" color="gray" size="sm">
-              <i className="fa-brands fa-instagram text-base" />
-            </IconButton>
-            <a href="https://www.material-tailwind.com/blocks" target="_blank">
-              <Button color="gray" size="sm" className="ml-auto">
-                Blocks
-              </Button>
-            </a>
-          </div>
+        <div className='flex lg:hidden'>
+          <button
+            type='button'
+            className='-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-400'
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            <span className='sr-only'>Open main menu</span>
+            <Bars3Icon className='h-6 w-6' aria-hidden='true' />
+          </button>
         </div>
-      </Collapse>
-    </MTNavbar>
+        <div className='hidden lg:flex lg:gap-x-12'>
+          {navigation.map((item) => (
+            <a
+              key={item.name}
+              href={item.href}
+              className={[
+                isScrolling ? 'text-black' : 'text-white',
+                'text-sm font-semibold leading-6',
+              ].join(' ')}
+            >
+              {item.name}
+            </a>
+          ))}
+        </div>
+        <div className='hidden lg:flex lg:flex-1 lg:justify-end'>
+          <a href='#' className='text-sm font-semibold leading-6 text-white'>
+            Log in <span aria-hidden='true'>&rarr;</span>
+          </a>
+        </div>
+      </nav>
+      <Dialog
+        className='lg:hidden'
+        open={mobileMenuOpen}
+        onClose={setMobileMenuOpen}
+      >
+        <div className='fixed inset-0 z-50' />
+        <Dialog.Panel className='fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10'>
+          <div className='flex items-center justify-between'>
+            <a href='#' className='-m-1.5 p-1.5'>
+              <span className='sr-only'>Your Company</span>
+              <img
+                className='h-8 w-auto'
+                src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500'
+                alt=''
+              />
+            </a>
+            <button
+              type='button'
+              className='-m-2.5 rounded-md p-2.5 text-gray-400'
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className='sr-only'>Close menu</span>
+              <XMarkIcon className='h-6 w-6' aria-hidden='true' />
+            </button>
+          </div>
+          <div className='mt-6 flow-root'>
+            <div className='-my-6 divide-y divide-gray-500/25'>
+              <div className='space-y-2 py-6'>
+                {navigation.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className='-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800'
+                  >
+                    {item.name}
+                  </a>
+                ))}
+              </div>
+              <div className='py-6'>
+                <a
+                  href='#'
+                  className='-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800'
+                >
+                  Log in
+                </a>
+              </div>
+            </div>
+          </div>
+        </Dialog.Panel>
+      </Dialog>
+    </header>
   );
 }
 
